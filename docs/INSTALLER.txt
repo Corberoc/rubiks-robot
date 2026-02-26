@@ -1,6 +1,7 @@
 **Procédure d'installation — Robot Rubik's Cube**
 	1) Flasher la carte SD avec Raspberry Pi Imager, sélectionner Raspberry Pi 4, puis OS : Raspberry Pi OS (64-bit) Full (Bookworm). Créer un compte par défaut, par exemple `rubik`.
 	2) Démarrer le Pi, le connecter au réseau et se connecter en SSH : `ssh rubik@<adresse_ip>`
+		ATTENTION vous pouvez etre amné à faire ssh-keygen -R @adresseIP
 	3) (Optionnel) Activer RealVNC pour accéder au bureau à distance : 
 		`sudo raspi-config` puis aller dans Interface Options > VNC > Enable. 
 		Une fois activé, se connecter via RealVNC Viewer avec l'adresse IP du Pi.
@@ -19,6 +20,15 @@
 		puis `chmod a+x *.sh` 
 		puis `./INSTALLER.sh`. 
 		Vérifier l'absence d'erreurs dans les logs avant de continuer.
+		FAIRE un reboot
 	7) Vérifications : 
 		`ls ..` pour confirmer que le dossier `rubiks-env` a bien été créé, 
 		puis `./1_text_gui.sh` et taper `u2` ou `c1` pour valider le bon fonctionnement.
+
+	8) Verifications des services 
+	Faire 
+		cat /usr/local/bin/rbx_safe_shutdown.sh
+		cat /etc/systemd/system/rbx-app.service
+		cat /etc/systemd/system/rbx-gpio3-shutdown.service
+	Pour controler que les chemins d'accès sont les bons , i.e avec le chemin mis à jour selon le nom de l'utilisateur
+	ATTENTION le dossier doit s'appeler rubiks-robot et être dans la home

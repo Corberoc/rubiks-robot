@@ -26,7 +26,8 @@ SERVOS_USE_PIGPIO = True  # True si tu utilises pigpio (recommandé)
 
 # --- LEDs NeoPixel ---
 LEDS_USE_CONFIG_JSON = True  # True = lire pins/count dans config.json
-RBX_CONFIG_PATH = "/home/rubik/rubiks-robot/config.json"  # chemin par défaut si pas RBX_CONFIG env
+# (Chemin résolu dynamiquement via RBX_CONFIG injecté par le wrapper systemd)
+RBX_CONFIG_PATH = ""  # non utilisé si RBX_CONFIG est défini
 
 # (Optionnel) override manuel si tu veux forcer sans config.json :
 # NEOPIXELS_OVERRIDE = [{"pin": 18, "count": 24, "brightness": 0.2},
@@ -94,17 +95,16 @@ def _find_config_path() -> Path:
         if p.exists():
             return p
 
-    # sinon chemin constant
-    p = Path(RBX_CONFIG_PATH).expanduser()
-    if p.exists():
-        return p
+    # sinon chemin constant (vide = ignoré)
+    if RBX_CONFIG_PATH:
+        p = Path(RBX_CONFIG_PATH).expanduser()
+        if p.exists():
+            return p
 
     # fallback : quelques candidats
     candidates = [
         Path.cwd() / "config.json",
         Path.home() / "rubiks-robot" / "config.json",
-        Path("/home/rubik/rubiks-robot/config.json"),
-        Path("/home/rubik/rubiks-robot/Ecran/config.json"),
     ]
     for c in candidates:
         if c.exists():
