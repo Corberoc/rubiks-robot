@@ -272,9 +272,16 @@ class CameraInterface2:
             _ = self._picam2.capture_array()
             time.sleep(0.06)
 
+        printed = {"done": False}
         def _capture_frame_and_meta():
             frame = self._picam2.capture_array()
             meta = self._picam2.capture_metadata()
+
+            if debug and not printed["done"]:
+                printed["done"] = True
+                sc = meta.get("ScalerCrop", None)
+                print(f"[META-ONCE] size={size} frame={frame.shape} ScalerCrop={sc}")
+
             return frame, meta
 
         def _sat_pct_from_frame(rgb_frame, thr=250):

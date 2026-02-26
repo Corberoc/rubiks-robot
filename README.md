@@ -244,4 +244,3 @@ Le setup Pi crée un venv standard :
 - **CUBOTino** : conversion mouvements robot (merci pour le partage du code et de l’approche).
 - Projet pédagogique Rubik’s Cube : vision + robotique + pipeline instrumenté.
 ---
-

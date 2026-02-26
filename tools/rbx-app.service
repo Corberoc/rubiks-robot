@@ -1,0 +1,16 @@
+[Unit]
+Description=Rubiks Robot - App principale (9_main.sh)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/rubik/rubiks-robot
+ExecStart=/bin/bash /home/rubik/rubiks-robot/9_main.sh --no-sudo
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=3
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

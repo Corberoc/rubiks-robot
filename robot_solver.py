@@ -85,6 +85,7 @@
 
 import os
 import threading
+import time
 
 from calibration_rubiks import load_calibration
 #from calibration_colors import load_color_calibration
@@ -276,6 +277,7 @@ class RobotCubeSolver:
             )
 
             print(f"📸 {face}")
+            time.sleep(0.20)
             self.camera.capture_image(
                 filename=f"{self.image_folder}/{face}.jpg",
                 rotation=0
@@ -292,36 +294,46 @@ class RobotCubeSolver:
             )      
         # U
         self.check_stop("capture")
+        time.sleep(0.25)
         snap("U")
 
         # B
         self.check_stop("capture")
         flip_up()
+        time.sleep(0.25)
         snap("B")
 
         # D
         self.check_stop("capture")
         flip_up()
+        time.sleep(0.25)
         snap("D")
 
         # F
         self.check_stop("capture")
         flip_up()
+        time.sleep(0.25)
         snap("F")
 
         # R
         self.check_stop("capture")
         scan_yaw_out("D")  # ou "G"
+        time.sleep(0.25)
         flip_up()
+        time.sleep(0.25)
         scan_yaw_home()
+        time.sleep(0.25)
         snap("R")
 
         # L
         self.check_stop("capture")
         flip_up()
+        time.sleep(0.25)
         flip_up()
+        time.sleep(0.25)
         snap("L")
         scan_yaw_home()
+        time.sleep(0.25)
 
     # ========================================================================
     # ÉTAPE 2 : CALIBRATION AUTOMATIQUE (optionnelle)
@@ -681,6 +693,30 @@ class RobotCubeSolver:
             self.emit("pipeline_stopped", step=step or "unknown", pct=pct, msg=msg)
             raise PipelineStopped(msg)
 
+    def park_robot_safe(self):
+        """Met le robot dans une position mécanique sûre (best effort)."""
+        try:
+            from robot_moves_cubotino import flip_up, scan_yaw_home
+        except Exception as e:
+            print(f"⚠️ park import failed: {e}")
+            return False
+        try:
+            flip_up()
+            try:
+                scan_yaw_home()
+            except Exception:
+                pass
+            self.emit("robot_parked", step="stop", pct=0.0, msg="Bras releve")
+            return True
+        except Exception as e:
+            self.emit("robot_park_failed", step="stop", pct=0.0, msg=str(e))
+            print(f"⚠️ park failed: {e}")
+            return False
+    def emergency_stop_and_park(self):
+        self.emergency_stop()
+        self.emit("stop_requested", step="stop", pct=0.0, msg="Arret demande")
+        time.sleep(0.2)
+        self.park_robot_safe()
 
 # ============================================================================
 # TESTS

@@ -1,0 +1,76 @@
+LANCEMENT APPLICATION MAIN + GESTION BOUTON
+-------------------------------------------
+0) Pré-check (1 minute)
+
+cd ~/rubiks-robot/tools
+ls -l rbx-app.service rbx-gpio3-shutdown.service gpio3_button.py rbx_safe_shutdown.sh rbx_safe_shutdown.py
+chmod a+ *.sh
+
+1)Tester le SAFE python (sans éteindre) - ⚠️ Important : ne lance pas encore le .sh (lui fait poweroff).
+
+sudo /home/rubik/rubik-env/bin/python3 /home/rubik/rubiks-robot/tools/rbx_safe_shutdown.py
+
+Si tu vois des SKIP c’est OK tant que ça continue et termine.
+
+2) Installer le wrapper shutdown (mais ne pas l’exécuter)
+sudo cp rbx_safe_shutdown.sh /usr/local/bin/rbx_safe_shutdown.sh
+sudo chmod +x /usr/local/bin/rbx_safe_shutdown.sh
+
+Vérifie qu’il pointe vers le bon python :
+grep -n "python3" /usr/local/bin/rbx_safe_shutdown.sh
+(résultat attendu 4:/home/rubik/rubik-env/bin/python3 /home/rubik/rubiks-robot/tools/rbx_safe_shutdown.py || true)
+
+3) Tester le bouton “à la main” (sans systemd)
+But : vérifier que l’appui court/long est détecté avant de mettre au boot.
+	1.Stoppe les services s’ils existent (si pas installés, ignore)
+	sudo systemctl disable --now rbx-gpio3-shutdown.service 2>/dev/null || true
+	2. Lance le listener en direct :
+	sudo python3 /home/rubik/rubiks-robot/tools/gpio3_button.py
+	3.Appuie :
+	court : tu dois voir “SHORT” dans la console (pas de pb rbx-app.service est en erreur car non installé encore)
+	long : il va lancer le shutdown (donc évite de tester long tout de suite si tu ne veux pas éteindre)
+	➡️ Quitter le test : Ctrl + C
+4) Installer les services systemd (app + bouton)
+sudo cp rbx-app.service /etc/systemd/system/rbx-app.service
+sudo cp rbx-gpio3-shutdown.service /etc/systemd/system/rbx-gpio3-shutdown.service
+sudo systemctl daemon-reload
+
+5) Activer et démarrer (d’abord bouton, puis app)
+
+	1.bouton d’abord (tu gardes la main),
+	2.puis app.
+	
+	sudo systemctl enable --now rbx-gpio3-shutdown.service
+	sudo systemctl status rbx-gpio3-shutdown.service
+	Taper q pour se deblouqer
+	sudo systemctl enable --now rbx-app.service
+	sudo systemctl status rbx-app.service
+
+
+6) Logs en live (validation)
+	sudo journalctl -u rbx-gpio3-shutdown.service -f
+
+	Appui court sur le bouton : tu dois voir ton log/print de SHORT (si tu l’as ajouté) + éventuellement le restart.
+	Ctrl C pour sortir
+	
+7) Test final “appui long” (quand tu es prêt)
+⚠️ Ça va éteindre.
+ouvre un terminal SSH si possible (plus confortable)
+lance les logs :
+sudo journalctl -u rbx-gpio3-shutdown.service -f
+fais appui long → tu dois voir LONG puis la machine s’éteint.
+
+UTILITAIRES) 
+--> Modification quelcqonque d'un fichier (pour tout relancer)
+sudo systemctl daemon-reload
+sudo systemctl reset-failed rbx-app.service rbx-gpio3-shutdown.service
+sudo systemctl restart rbx-app.service rbx-gpio3-shutdown.service
+sudo systemctl status rbx-app.service rbx-gpio3-shutdown.service --no-pager
+--> OU
+./relance_services.sh
+
+Voir les 50 dernières lignes :
+--> Pour tester le lancement de l'application  ==>
+sudo journalctl -u rbx-app.service -n 50 --no-pager
+--> Pour tester l'appui des boutons ==>
+sudo journalctl -u rbx-gpio3-shutdown.service -f

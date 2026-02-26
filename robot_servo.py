@@ -13,8 +13,8 @@
 #       - propose des menus/tests pour calibration et validation mécanique.
 #
 #  Matériel / GPIO (pigpio) :
-#     - Servo bas (plateau rotation cube) : B_SERVO_PIN = 24
-#     - Servo haut (couvercle)            : T_SERVO_PIN = 23
+#     - Servo bas (plateau rotation cube) : B_SERVO_PIN = 16 ancienement 24
+#     - Servo haut (couvercle)            : T_SERVO_PIN = 5 ancienement 23
 #     - Dépendance : `pigpiod` doit tourner (sinon SystemExit).
 #
 #  État global suivi :
@@ -73,8 +73,8 @@ import time
 import pigpio  # Assure-toi que pigpiod tourne: sudo systemctl start pigpiod
 
 # GPIO des servos (choix B : nouveau câblage)
-B_SERVO_PIN = 24  # servo inférieur (rotation cube)
-T_SERVO_PIN = 23  # servo supérieur (couvercle)
+B_SERVO_PIN = 16 #GIPO 24 devient 16  # servo inférieur (rotation cube)
+T_SERVO_PIN = 5 #GPIO 23 devient 5  # servo supérieur (couvercle)
 
 # Largeurs d'impulsions en microsecondes (à ajuster si besoin)
 LEFT_PW  = 850    # ~90° gauche

@@ -1,0 +1,24 @@
+**Procédure d'installation — Robot Rubik's Cube**
+	1) Flasher la carte SD avec Raspberry Pi Imager, sélectionner Raspberry Pi 4, puis OS : Raspberry Pi OS (64-bit) Full (Bookworm). Créer un compte par défaut, par exemple `rubik`.
+	2) Démarrer le Pi, le connecter au réseau et se connecter en SSH : `ssh rubik@<adresse_ip>`
+	3) (Optionnel) Activer RealVNC pour accéder au bureau à distance : 
+		`sudo raspi-config` puis aller dans Interface Options > VNC > Enable. 
+		Une fois activé, se connecter via RealVNC Viewer avec l'adresse IP du Pi.
+	4) Désactiver l'audio pour libérer les ressources DMA nécessaires aux LEDs NeoPixel : 
+		`sudo nano /boot/firmware/config.txt` 
+		puis modifier ou ajouter la ligne `dtparam=audio=off`. 
+		Sauvegarder avec Ctrl+X, Y, 
+		Entrée puis redémarrer : `sudo reboot`.
+	5) Récupérer le projet :
+		Option A (recommandé) : `git clone <url_du_repo> rubiks-robot`
+		Option B (si pas d'accès Git) : 
+			créer le dossier avec `mkdir rubiks-robot` 
+			puis transférer via WinSCP tous les fichiers de la racine ainsi que le dossier `Ecran/` complet.
+	6) Lancer l'installation : 
+		`cd rubiks-robot` 
+		puis `chmod a+x *.sh` 
+		puis `./INSTALLER.sh`. 
+		Vérifier l'absence d'erreurs dans les logs avant de continuer.
+	7) Vérifications : 
+		`ls ..` pour confirmer que le dossier `rubiks-env` a bien été créé, 
+		puis `./1_text_gui.sh` et taper `u2` ou `c1` pour valider le bon fonctionnement.

@@ -34,10 +34,15 @@ class RBXPipelineRunner:
         )
 
     def estop(self) -> None:
-        # adapte selon ton projet (emergency_stop / stop_flag / stop)
         if hasattr(self.solver, "emergency_stop"):
             self.solver.emergency_stop()
         elif hasattr(self.solver, "stop"):
             self.solver.stop()
         elif hasattr(self.solver, "stop_flag"):
             self.solver.stop_flag.set()
+
+    def emergency_stop_and_park(self) -> None:
+        if hasattr(self.solver, "emergency_stop_and_park"):
+            self.solver.emergency_stop_and_park()
+        else:
+            self.estop()

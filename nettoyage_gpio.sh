@@ -20,7 +20,8 @@ sleep 1
 sudo python3 << 'EOF'
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
-pins = [5, 6, 13, 19, 26, 16, 23, 24]
+#pins = [5, 6, 13, 19, 26, 16, 23, 24]
+pins = [3,5, 6,8,9,10,11,13,17 ,18,19, 26, 16, 23, 24,25]
 for pin in pins:
     try:
         GPIO.cleanup(pin)

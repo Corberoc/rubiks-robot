@@ -1,0 +1,13 @@
+﻿[Unit]
+Description=Rubiks Robot - GPIO3 button (short restart / long shutdown)
+After=multi-user.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 /home/rubik/rubiks-robot/tools/gpio3_button.py
+Restart=always
+RestartSec=0.2
+
+[Install]
+WantedBy=multi-user.target
